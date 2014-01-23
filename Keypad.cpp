@@ -3,12 +3,12 @@
 || @file Keypad.cpp
 || @version 4.0
 || @author Mark Stanley, Alexander Brevig, Yoan Mollard
-|| @contact mstanley@technologist.com, alexanderbrevig@gmail.com, http://github.com/ymollard
+|| @contact mstanley@technologist.com, alexanderbrevig@gmail.com, yoan.mollard@konqi.fr
 ||
 || @description
 || | This library provides a simple interface for using matrix
-|| | keypads. It supports multiple keypresses while maintaining
-|| | backwards compatibility with the old single key library.
+|| | keypads. It supports multiple keypresses and codes while 
+|| | maintaining backwards compatibility with the old library.
 || | It also supports user selectable pins and definable keymaps.
 || #
 ||
@@ -44,22 +44,22 @@ Keypad::Keypad(char *userKeymap, byte *row, byte *col, byte numRows, byte numCol
 	setDebounceTime(10);
 	setHoldTime(500);
 	keypadEventListener = 0;
-	num_keys_queue = numKeysCode;
+	numKeysInQueue = numKeysCode;
 
 	startTime = 0;
 	single_key = false;
 
-	lq = -1;
-	num_keys_queue = numKeysCode;
+	lastInQueueId = -1;
+	numKeysInQueue = numKeysCode;
 	
-	if(num_keys_queue!=0) {
-		keys_queue = (char*)malloc(num_keys_queue*sizeof(char));
-		reset_keys_queue();
+	if(numKeysInQueue!=0) {
+		keysQueue = (char*)malloc(numKeysInQueue*sizeof(char));
+		resetKeysInQueue();
 	}
 }
 
 Keypad::~Keypad() {
-	free(keys_queue);
+	free(keysQueue);
 }
 
 // Let the user define a keymap - assume the same row/column count as defined in constructor
@@ -254,9 +254,8 @@ void Keypad::setHoldTime(uint hold) {
     holdTime = hold;
 }
 
-void Keypad::addEventListener(void (*listener)(char), byte type){
+void Keypad::addEventListener(void (*listener)(char)){
 	keypadEventListener = listener;
-	typeEventListener = type;
 }
 
 void Keypad::transitionTo(byte idx, KeyState nextState) {
@@ -266,58 +265,46 @@ void Keypad::transitionTo(byte idx, KeyState nextState) {
 	// Sketch used the getKey() function.
 	// Calls keypadEventListener only when the first key in slot 0 changes state.
 	if (single_key)  {
-	  	if ((keypadEventListener!=NULL) && (idx==0) &&
-			(typeEventListener==LISTENER_PRESSED && nextState==PRESSED ||
-			 typeEventListener==LISTENER_RELEASED && nextState==RELEASED ||
-			 typeEventListener==LISTENER_BOTH))  {
+	  	if ( (keypadEventListener!=NULL) && (idx==0) )  {
 			keypadEventListener(key[0].kchar);
 		}
-		if(num_keys_queue!=0 && nextState==PRESSED)
-			add_key_in_queue(key[0].kchar);
+		if(numKeysInQueue!=0 && nextState==PRESSED)
+			addKeyInQueue(key[0].kchar);
 	}
 	// Sketch used the getKeys() function.
 	// Calls keypadEventListener on any key that changes state.
 	else {
-	  	if (keypadEventListener!=NULL &&
-            (typeEventListener==LISTENER_PRESSED && nextState==PRESSED ||
-			 typeEventListener==LISTENER_RELEASED && nextState==RELEASED ||
-			 typeEventListener==LISTENER_BOTH))  {
+	  	if (keypadEventListener!=NULL)  {
 			keypadEventListener(key[idx].kchar);
 		}
 	}
 }
 
-void Keypad::add_key_in_queue(char c) {
-    lq = (lq +1)%num_keys_queue;
-    keys_queue[lq] = c;
+void Keypad::addKeyInQueue(char c) {
+    lastInQueueId = (lastInQueueId +1)%numKeysInQueue;
+    keysQueue[lastInQueueId] = c;
 }
 
-bool Keypad::test_code(const char* code, byte code_length) {
-	if(code_length<num_keys_queue || code_length==0)
+bool Keypad::testCode(const char* code, byte codeLength) {
+	if(codeLength<numKeysInQueue || codeLength==0)
 		return false;
 
-    for(byte i=0; i<code_length; i++) {
-		if(keys_queue[(lq-i+num_keys_queue)%num_keys_queue]!=code[code_length-i-1])
+    for(byte i=0; i<codeLength; i++) {
+		if(keysQueue[(lastInQueueId-i+numKeysInQueue)%numKeysInQueue]!=code[codeLength-i-1])
 			return false;
 	}
 	return true;
 }
 
-char Keypad::last_key_in_queue() {
-   return num_keys_queue>0? keys_queue[lq]:NO_KEY;
-}
-
-void Keypad::reset_keys_queue() {
-    for(byte i=0; i<num_keys_queue; i++)
-        keys_queue[i]=NO_KEY;
+void Keypad::resetKeysInQueue() {
+    for(byte i=0; i<numKeysInQueue; i++)
+        keysQueue[i]=NO_KEY;
 }
 
 
 /*
 || @changelog
-|| | 4.0 2014-02-15 - Yoan Mollard     : Added a parameter "type" to addEventListener to be warned only
-|| |                                          if a key is pressed or released or both
-|| |                                          + Added the keys queue for reading passwords (circular buffer)
+|| | 4.0 2014-02-15 - Yoan Mollard     : Added the keys queue for reading passwords (circular buffer)
 || | 3.1 2013-01-15 - Mark Stanley     : Fixed missing RELEASED & IDLE status when using a single key.
 || | 3.0 2012-07-12 - Mark Stanley     : Made library multi-keypress by default. (Backwards compatible)
 || | 3.0 2012-07-12 - Mark Stanley     : Modified pin functions to support Keypad_I2C
