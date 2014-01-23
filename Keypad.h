@@ -1,9 +1,9 @@
 /*
 ||
 || @file Keypad.h
-|| @version 3.1
-|| @author Mark Stanley, Alexander Brevig
-|| @contact mstanley@technologist.com, alexanderbrevig@gmail.com
+|| @version 4.0
+|| @author Mark Stanley, Alexander Brevig, Yoan Mollard
+|| @contact mstanley@technologist.com, alexanderbrevig@gmail.com, http://github.com/ymollard
 ||
 || @description
 || | This library provides a simple interface for using matrix
@@ -61,13 +61,14 @@ do {							 \
 
 #define OPEN LOW
 #define CLOSED HIGH
+#define LISTENER_PRESSED 0
+#define LISTENER_RELEASED 1
+#define LISTENER_BOTH 2
 
 typedef char KeypadEvent;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 
-// Made changes according to this post http://arduino.cc/forum/index.php?topic=58337.0
-// by Nick Gammon. Thanks for the input Nick. It actually saved 78 bytes for me. :)
 typedef struct {
     byte rows;
     byte columns;
@@ -77,12 +78,11 @@ typedef struct {
 #define MAPSIZE 10		// MAPSIZE is the number of rows (times 16 columns)
 #define makeKeymap(x) ((char*)x)
 
-
-//class Keypad : public Key, public HAL_obj {
 class Keypad : public Key {
 public:
 
-	Keypad(char *userKeymap, byte *row, byte *col, byte numRows, byte numCols);
+	Keypad(char *userKeymap, byte *row, byte *col, byte numRows, byte numCols, byte numKeysCode=0);
+	~Keypad();
 
 	virtual void pin_mode(byte pinNum, byte mode) { pinMode(pinNum, mode); }
 	virtual void pin_write(byte pinNum, boolean level) { digitalWrite(pinNum, level); }
@@ -99,12 +99,16 @@ public:
 	bool isPressed(char keyChar);
 	void setDebounceTime(uint);
 	void setHoldTime(uint);
-	void addEventListener(void (*listener)(char));
+	void addEventListener(void (*listener)(char), byte type=LISTENER_BOTH);
 	int findInList(char keyChar);
 	int findInList(int keyCode);
 	char waitForKey();
 	bool keyStateChanged();
 	byte numKeys();
+
+	bool test_code(const char* code, byte code_length);
+	char last_key_in_queue();
+	void reset_keys_queue();
 
 private:
 	unsigned long startTime;
@@ -115,18 +119,26 @@ private:
 	uint debounceTime;
 	uint holdTime;
 	bool single_key;
+	byte typeEventListener;
+	byte num_keys_queue;
+	char *keys_queue;  // Circular buffer: Typed keys are stored in this queue
+	byte lq; // Last in queue: last element of keys_queue added to the queue
 
 	void scanKeys();
 	bool updateList();
 	void nextKeyState(byte n, boolean button);
 	void transitionTo(byte n, KeyState nextState);
 	void (*keypadEventListener)(char);
+	void add_key_in_queue(char);
 };
 
 #endif
 
 /*
 || @changelog
+|| | 4.0 2014-02-15 - Yoan Mollard     : Added a parameter "type" to addEventListener to be warned only
+|| |                                          if a key is pressed or released or both
+|| |                                          + Added the keys queue for reading passwords (circular buffer)
 || | 3.1 2013-01-15 - Mark Stanley     : Fixed missing RELEASED & IDLE status when using a single key.
 || | 3.0 2012-07-12 - Mark Stanley     : Made library multi-keypress by default. (Backwards compatible)
 || | 3.0 2012-07-12 - Mark Stanley     : Modified pin functions to support Keypad_I2C
