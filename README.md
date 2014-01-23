@@ -1,12 +1,7 @@
-Keypad_Arduino
+Keypad_Arduino (Keypad 4.0)
 ==============
 
-Forked and enhanced Keypad library, based on the official version 3.1. Supports passwords and key codes (any sequence of n keys) and improves the listener feature.
-
-Changed feature: Listener type (Pressed, Released or Both)
---------------
-
-I've added an optional "type" to the listener to allow the programmer to choose in which cases the handler will be called, i.e. either when a key is pressed, or released, or in both cases like it was by default until now.
+Forked and enhanced Keypad library, based on the official version 3.1.
 
 Added feature: Built-in password and codes recognition
 --------------
