@@ -6,7 +6,8 @@
 || * 8-ohm speaker on digital pin 5
 ||
 || @description
-|| |    Debug/test of generic buffer
+|| |    This sketch gives an example of how to read integers,
+|| | floats, longs and strings with the Keypad library.
 || |
 || #
 */
@@ -52,9 +53,12 @@ void setup()
   kpd.addEventListener(key_event_handler);
 }
 
+/*** Declaration of some float, int, long and char[] that are gonna be read ***/
 float f, oldf=0;
 int i, oldi=0;
 long l, oldl=0;
+char str[buffer_length+1], oldstr[buffer_length+1];
+/*** old* are intended to contain the previous value and avoid printing the same value twice ***/
 
 void loop() {
   kpd.getKey();
@@ -81,10 +85,16 @@ void loop() {
     Serial.print("\r\n"); 
   }
   
+  if(kpd.readQueue(TYPE_STRING, str) && strncmp(str, oldstr, buffer_length)!=0) {
+    strncpy(oldstr, str, buffer_length);
+    Serial.print("str = \"");
+    Serial.print(str);
+    Serial.print("\"\r\n"); 
+  }
+  
   /* Below we make the buffer expiring after 4 seconds of inactivity */
   if(lastPress + 4000 < millis()) {
     kpd.resetKeysInQueue();
+    Serial.print("Queue cleared for inactivity\r\n");
   }
-  
-  //Serial.print("Sum = "); Serial.print(sum); Serial.print("\r\n");
 }
