@@ -93,7 +93,7 @@ void loop() {
   }
   
   /* Below we make the buffer expiring after 4 seconds of inactivity */
-  if(lastPress + 4000 < millis()) {
+  if(lastPress + 4000 < millis() && !kpd.isQueueEmpty()) {
     kpd.resetKeysInQueue();
     Serial.print("Queue cleared for inactivity\r\n");
   }
