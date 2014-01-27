@@ -52,21 +52,32 @@ void setup()
   kpd.addEventListener(key_event_handler);
 }
 
-//int sum = 0;
+float f, oldf=0;
+int i, oldi=0;
+long l, oldl=0;
 
 void loop() {
   kpd.getKey();
   
-  float f;
-  if(kpd.readQueue(TYPE_FLOAT, &f)) {
+
+  if(kpd.readQueue(TYPE_FLOAT, &f) && f!=oldf) {
+    oldf = f;
     Serial.print("f = ");
     Serial.print(f);
     Serial.print("\r\n"); 
   }
-  int i;
-  if(kpd.readQueue(TYPE_INT, &i)) {
+  
+  if(kpd.readQueue(TYPE_INT, &i) && i!=oldi) {
+    oldi = i;
     Serial.print("i = ");
     Serial.print(i);
+    Serial.print("\r\n"); 
+  }
+  
+  if(kpd.readQueue(TYPE_LONG, &l) && l!=oldl) {
+    oldl = l;
+    Serial.print("l = ");
+    Serial.print(l);
     Serial.print("\r\n"); 
   }
   
