@@ -10,6 +10,13 @@ PRESSED	LITERAL1
 HOLD	LITERAL1
 RELEASED	LITERAL1
 
+# Constants for easier queue reading
+TYPE_INT	LITERAL2
+TYPE_STRING	LITERAL2
+TYPE_HEX	LITERAL2
+TYPE_FLOAT	LITERAL2
+TYPE_LONG	LITERAL2
+
 # Keypad Library methods & functions
 addEventListener	KEYWORD2
 bitMap	KEYWORD2
@@ -27,6 +34,10 @@ pin_read	KEYWORD2
 setDebounceTime	KEYWORD2
 setHoldTime	KEYWORD2
 waitForKey	KEYWORD2
+testPassword	KEYWORD2
+readQueue	KEYWORD2
+resetKeysInQueue	KEYWORD2
+isQueueEmpty	KEYWORD2
 
 # this is a macro that converts 2d arrays to pointers
 makeKeymap	KEYWORD2

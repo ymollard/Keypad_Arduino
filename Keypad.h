@@ -106,7 +106,7 @@ public:
 	bool keyStateChanged();
 	byte numKeys();
 
-	bool testCode(const char* code, byte codeLength);
+    bool testPassword(const char* passwd, byte passwdLength);
     bool readQueue(byte type, void *buffer);
 	void resetKeysInQueue();
     bool isQueueEmpty();
@@ -136,7 +136,7 @@ private:
 
 /*
 || @changelog
-|| | 4.0 2014-02-15 - Yoan Mollard     : Added the keys queue for reading passwords (circular buffer)
+|| | 4.0 2014-01-27 - Yoan Mollard     : Added the queue and the readQueue() for float, int, long, string, hex
 || | 3.1 2013-01-15 - Mark Stanley     : Fixed missing RELEASED & IDLE status when using a single key.
 || | 3.0 2012-07-12 - Mark Stanley     : Made library multi-keypress by default. (Backwards compatible)
 || | 3.0 2012-07-12 - Mark Stanley     : Modified pin functions to support Keypad_I2C

@@ -286,12 +286,12 @@ void Keypad::addKeyInQueue(char c) {
     // Serial.print("QUEUE: ");  for(int i=0; i<numKeysInQueue; i++) Serial.print(keysQueue[i]); Serial.print("                \r\n");
 }
 
-bool Keypad::testCode(const char* code, byte codeLength) {
-	if(codeLength<numKeysInQueue || codeLength==0)
+bool Keypad::testPassword(const char* passwd, byte passwdLength) {
+    if(passwdLength<numKeysInQueue || passwdLength==0)
 		return false;
 
-    for(byte i=0; i<codeLength; i++) {
-		if(keysQueue[(lastInQueueId-i+numKeysInQueue)%numKeysInQueue]!=code[codeLength-i-1])
+    for(byte i=0; i<passwdLength; i++) {
+        if(keysQueue[(lastInQueueId-i+numKeysInQueue)%numKeysInQueue]!=passwd[passwdLength-i-1])
 			return false;
 	}
 	return true;
@@ -344,7 +344,7 @@ void Keypad::resetKeysInQueue() {
 
 /*
 || @changelog
-|| | 4.0 2014-02-15 - Yoan Mollard     : Added the keys queue for reading passwords (circular buffer)
+|| | 4.0 2014-01-27 - Yoan Mollard     : Added the queue and the readQueue() for float, int, long, string, hex
 || | 3.1 2013-01-15 - Mark Stanley     : Fixed missing RELEASED & IDLE status when using a single key.
 || | 3.0 2012-07-12 - Mark Stanley     : Made library multi-keypress by default. (Backwards compatible)
 || | 3.0 2012-07-12 - Mark Stanley     : Modified pin functions to support Keypad_I2C

@@ -58,12 +58,12 @@ void loop() {
   kpd.getKey();
   
   /* We test the first password and produce a long sound when it is recognized */
-  if(kpd.testCode(secret_code, secret_code_length)) {
+  if(kpd.testPassword(secret_code, secret_code_length)) {
     tone(5, 500, 500);
     kpd.resetKeysInQueue();
   }
   /* We test the second password and produce a different long sound when it is recognized */
-  else if(kpd.testCode(secret_code2, secret_code_length)) {
+  else if(kpd.testPassword(secret_code2, secret_code_length)) {
     tone(5, 300, 500);
     kpd.resetKeysInQueue();
   }
