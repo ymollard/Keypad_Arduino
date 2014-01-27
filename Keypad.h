@@ -59,8 +59,10 @@ do {							 \
 #endif
 
 
-#define OPEN LOW
-#define CLOSED HIGH
+#define TYPE_INT 0
+#define TYPE_STRING 1
+#define TYPE_HEX 2
+#define TYPE_FLOAT 3
 
 typedef char KeypadEvent;
 typedef unsigned int uint;
@@ -104,7 +106,9 @@ public:
 	byte numKeys();
 
 	bool testCode(const char* code, byte codeLength);
+    bool readQueue(byte type, void *buffer);
 	void resetKeysInQueue();
+    bool isQueueEmpty();
 
 private:
 	unsigned long startTime;
@@ -115,9 +119,9 @@ private:
 	uint debounceTime;
 	uint holdTime;
 	bool single_key;
-	byte numKeysInQueue;
+    int numKeysInQueue;
 	char *keysQueue;  // Circular buffer: Typed keys are stored in this queue
-	byte lastInQueueId; // Last in queue: last element of keys_queue added to the queue
+    int lastInQueueId; // Last in queue: last element of keys_queue added to the queue
 
 	void scanKeys();
 	bool updateList();

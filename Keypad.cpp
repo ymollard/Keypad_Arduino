@@ -283,6 +283,7 @@ void Keypad::transitionTo(byte idx, KeyState nextState) {
 void Keypad::addKeyInQueue(char c) {
     lastInQueueId = (lastInQueueId +1)%numKeysInQueue;
     keysQueue[lastInQueueId] = c;
+    // Serial.print("QUEUE: ");  for(int i=0; i<numKeysInQueue; i++) Serial.print(keysQueue[i]); Serial.print("                \r\n");
 }
 
 bool Keypad::testCode(const char* code, byte codeLength) {
@@ -296,8 +297,45 @@ bool Keypad::testCode(const char* code, byte codeLength) {
 	return true;
 }
 
+bool Keypad::readQueue(byte type, void *buffer) {
+    if(numKeysInQueue==0 || isQueueEmpty())
+        return false;
+    bool success = true;
+
+    char localBuffer[numKeysInQueue+1], currentChar;
+    for(int i=0; i<numKeysInQueue; i++) {
+        currentChar = keysQueue[(lastInQueueId+i+1+numKeysInQueue)%numKeysInQueue];
+        localBuffer[i] = currentChar!=NO_KEY? currentChar:' ';
+    }
+    localBuffer[numKeysInQueue] = '\0';
+
+    if(type==TYPE_FLOAT)
+        *(float*)buffer = atof(localBuffer);
+    else if(type==TYPE_INT)
+        *(int*)buffer = atoi(localBuffer);
+    else if(type==TYPE_STRING)
+        strncpy((char*)buffer, localBuffer, numKeysInQueue);
+    else if(type==TYPE_HEX) {
+        char *failure;
+        *(long*)buffer = strtol(localBuffer, &failure, 16);
+        if(failure!=NULL) success = false;
+    }
+    else
+        success = false;
+
+    return success;
+}
+
+bool Keypad::isQueueEmpty() {
+    for(int i=0; i<numKeysInQueue; i++) {
+        if(keysQueue[i]!=NO_KEY)
+            return false;
+    }
+    return true;
+}
+
 void Keypad::resetKeysInQueue() {
-    for(byte i=0; i<numKeysInQueue; i++)
+    for(int i=0; i<numKeysInQueue; i++)
         keysQueue[i]=NO_KEY;
 }
 
