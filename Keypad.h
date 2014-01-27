@@ -63,6 +63,7 @@ do {							 \
 #define TYPE_STRING 1
 #define TYPE_HEX 2
 #define TYPE_FLOAT 3
+#define TYPE_LONG 4
 
 typedef char KeypadEvent;
 typedef unsigned int uint;

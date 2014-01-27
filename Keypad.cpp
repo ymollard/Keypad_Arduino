@@ -313,6 +313,8 @@ bool Keypad::readQueue(byte type, void *buffer) {
         *(float*)buffer = atof(localBuffer);
     else if(type==TYPE_INT)
         *(int*)buffer = atoi(localBuffer);
+    else if(type==TYPE_LONG)
+        *(long*)buffer = atol(localBuffer);
     else if(type==TYPE_STRING)
         strncpy((char*)buffer, localBuffer, numKeysInQueue);
     else if(type==TYPE_HEX) {
