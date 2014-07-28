@@ -10,14 +10,14 @@ Reading a float, int, long, string or hex made easier
 A method readQueue() helps you to read instantly the content of the buffer into a float, int, long or string value.
 
 An example?
-bool intRead = keypad.readQueue(TYPE_INT, &my_int);
+<code>int intRead = keypad.readQueue(TYPE_INT, &my_int);</code>
 
 Password and codes recognition
 --------------
 Willing to protect your arduino setup with a password or any secret code? As an extension of buffering and interpreting the content of the buffer, a method is able to check instantly whether the typed password is correct.
 
 An example?
-bool accessGranted = keypad.testCode("12345", 5);
+<code>bool accessGranted = keypad.testCode("12345", 5);</code>
 
 
 How to install and use?
